@@ -1,0 +1,45 @@
+---
+- name: Wordpress
+  hosts: all
+  user: centos
+  connection: ssh
+  become: yes
+  become_method: sudo
+  tasks:
+ 
+  - name: Run Script
+    when: (ansible_distribution == "CentOS" and ansible_distribution_major_version == "7")
+    package: 
+      name: "{{item}}"
+      state: present
+    with_items: 
+    - epel-release
+    - httpd
+    - http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+    - php
+    - wget
+
+#  - name:
+#    when: (ansible_distribution == "CentOS" and ansible_distribution_major_version == "7")
+#    command:
+#    action: systemctl start httpd
+
+  
+#  - name: Add users
+#    user:
+#      name: "{{item}}"
+#      state: present
+#    with_items:
+#    - bob
+#    - ben
+#    - lisa
+#    - katty
+  
+#  - name: Route 53
+#    route53:
+#      state: present
+#      zone: bohlar.com
+#      record: ansible.bohlar.com
+#      type: A
+#      value: 18.223.16.225
+#      wait: no

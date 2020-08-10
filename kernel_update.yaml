@@ -1,0 +1,38 @@
+---
+- name: Update Kernel
+  hosts: all
+  user: centos
+  connection: ssh
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: Get Kernel Version
+    when: (ansible_distribution == "CentOS" and ansible_distribution_major_version == "7")
+    debug: 
+      var:  "{{ansible_kernel}}"
+  - name: Update kernel
+    when: (ansible_distribution == "CentOS" and ansible_distribution_major_version == "7")
+    package:
+      name: kernel
+      state: latest
+    notify: REBOOT_MACHINE
+  - name: Get Kernel Version
+    when: (ansible_distribution == "CentOS" and ansible_distribution_major_version == "7")
+    debug: 
+      var:  "{{ansible_kernel}}"
+
+
+
+  - name: Local script 
+    copy: 
+      src: "script.sh"
+      dest: /tmp/script.sh
+    
+
+  - name: Local script 
+    shell: "sh /tmp/script.sh"
+
+
+  # handlers: 
+  # - name: REBOOT_MACHINE
+  #   shell: reboot

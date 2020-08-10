@@ -1,0 +1,34 @@
+---
+- name: Agent Installation
+  hosts: all
+  user: centos
+  connection: ssh
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: Create a repo
+    shell: "rpm -Uvh http://repo.nagios.com/nagios/7/nagios-repo-7-4.el7.noarch.rpm"
+    ignore_errors: true
+
+  - name: Install NCPA 
+    package: 
+      name: ncpa 
+      state: present
+    notify: NCPA_AGENT
+
+
+  - name: Change Config File
+    lineinfile:
+      path: /usr/local/ncpa/etc/ncpa.cfg
+      regexp: '^community_string'
+      line: 'community_string = Str0ngT0k3n'
+
+
+
+
+  handlers: 
+  - name: NCPA_AGENT 
+    systemd:
+      name: ncpa_listener
+      enabled: true
+      state: restarted

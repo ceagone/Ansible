@@ -1,0 +1,36 @@
+---
+- name: Agent Installation
+  hosts: all
+  user: centos
+  connection: ssh
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: Add  Repo
+    when: (ansible_distribution == "CentOS" and ansible_distribution_major_version == "7")
+    copy: 
+      src: r1soft.repo
+      dest: /etc/yum.repos.d/r1soft.repo
+
+  - name: Install Agent
+    when: (ansible_distribution == "CentOS" and ansible_distribution_major_version == "7")
+    package:
+      name: "{{item}}"
+      state: present          #absent     latest
+    with_items:
+    - serverbackup-enterprise-agent
+    notify: "AGENT_INSTALLED"
+
+
+  # - name: Get Key
+  #     when: (ansible_distribution == "CentOS" and ansible_distribution_major_version == "6")
+  #     shell: "r1soft-setup --get-key http://backup.acirrustech.com/" 
+
+
+
+  handlers:
+  - name: "AGENT_INSTALLED"
+    systemd: 
+      name: sbm-agent
+      state: restarted
+      enabled: true

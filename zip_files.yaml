@@ -1,0 +1,13 @@
+---
+- name: Zip files
+  hosts: all
+  user: centos
+  connection: ssh
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: Zip files over 90 days
+    raw:  'find /var/log/ -type f  -name "*.log"  -mtime +90     -exec  gzip -v9  {}  +'
+
+  - name: Zip files over 100M
+    raw:  'find /var/log/ -type f  -name "*.log"  -size +100M    -exec  gzip -v9  {}  +'

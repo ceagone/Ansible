@@ -1,0 +1,19 @@
+---
+- name: remove username and public key
+  # gather_facts: no
+  hosts: all
+  become: true
+  become_method: sudo
+  user: centos
+  vars_prompt:
+    - name: username
+      prompt: “What is your username?”
+      private: no
+  tasks:
+    - debug:
+        msg: ‘Logging in as {{ username }}’
+    - name: remove users
+      user:
+        name: “{{username}}”
+        state: absent
+        remove: yes

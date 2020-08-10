@@ -9,6 +9,10 @@
     - name: username
       prompt: "What is your username?"
       private: no
+
+    - name: password
+      prompt: "What is your password?"
+      private: yes
       
   tasks:
     - debug:
@@ -23,14 +27,3 @@
         user: "{{ username }}"
         state: present
         key: "{{ lookup('file', '/home/ec2-user/.ssh/id_rsa.pub') }}"
-
-  tasks:
-    - debug:
-        msg: 'Logging in as {{ username }}'
-    - name: remove users
-      user:
-        name: "{{username}}"
-        state: absent
-        remove: yes
-
-  

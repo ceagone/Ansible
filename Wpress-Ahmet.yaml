@@ -1,0 +1,74 @@
+---
+- name: Install wordpress on CentOS 7
+  # gather_facts: no
+  hosts: all
+  become: true
+  become_method: sudo
+  user: centos
+  tasks:
+    - name: add users
+      user:
+        name: "{{ item }}"
+        state: present
+        generate_ssh_key: true
+      with_items:
+        - bob
+        - ben
+        - lisa
+        - katty
+    - name: Install remi repo.
+      yum:
+        name: http://rpms.famillecollet.com/enterprise/remi-release-{{ ansible_distribution_major_version }}.rpm
+        state: present
+    # - name: install remi repo 7
+    #   shell: "yum install http://rpms.remirepo.net/enterprise/remi-release-7.rpm -y"   (this will get you the repo, but if its already installed will give an error)
+    - name: enable remi-php72
+      shell: "yum-config-manager --enable remi-php72"
+    - name: Install httpd
+      package:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - httpd
+        - php
+        - mariadb-server
+        - mysql
+        - elinks
+        - php-mysql
+        - php-gd
+      ignore_errors: yes
+    # - name: Download wordpress
+    #   get_url:
+    #     url: https://wordpress.org/latest.tar.gz
+    #     dest: /tmp/
+    - name: Unzip wordpress
+      unarchive:
+        src: https://wordpress.org/latest.tar.gz
+        dest: /var/www/html/
+        remote_src: yes
+    - name: move files
+      shell: "mv /var/www/html/wordpress/*  /var/www/html/"
+      ignore_errors: yes
+    - name: Move index.html
+      shell: "mv /var/www/html/index.html /tmp/"
+      ignore_errors: true
+    - name: run apache
+      systemd:
+        name: httpd
+        state: restarted
+        enabled: yes
+      ignore_errors: yes
+    # - name: Run local playbook
+    #   shell: route53.yaml
+- name: add a record to route53
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - route53:
+        command: create
+        zone: bohlar.com
+        record: ansible.bohlar.com
+        type: A
+        ttl: 60
+        value: 3.22.223.99
+        wait: yes

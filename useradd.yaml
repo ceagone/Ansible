@@ -27,3 +27,4 @@
         user: "{{ username }}"
         state: present
         key: "{{ lookup('file', '/home/ec2-user/.ssh/id_rsa.pub') }}"
+      # path: /etc/ssh/authorized_keys

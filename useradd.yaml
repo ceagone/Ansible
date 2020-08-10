@@ -10,9 +10,9 @@
       prompt: "What is your username?"
       private: no
 
-    - name: password
-      prompt: "What is your password?"
-      private: yes
+ #   - name: password
+ #     prompt: "What is your password?"
+ #     private: yes
       
   tasks:
     - debug:
